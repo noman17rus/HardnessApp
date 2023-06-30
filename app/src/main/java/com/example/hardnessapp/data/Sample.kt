@@ -9,6 +9,8 @@ data class Sample(
   @PrimaryKey(autoGenerate = false)
   val number: String,
   @ColumnInfo
+  val trillon: String,
+  @ColumnInfo
   val volumeSample: Int = 50,
   @ColumnInfo
   val volumeHardness1: Float,
@@ -17,5 +19,11 @@ data class Sample(
   @ColumnInfo
   val volumeCalcium1: Float,
   @ColumnInfo
-  val volumeCalcium2: Float
+  val volumeCalcium2: Float,
+  @ColumnInfo
+  val resultHardness: String,
+  @ColumnInfo
+  val resultCalcium: String,
+  @ColumnInfo
+  val resultMagnesium: String,
 )
