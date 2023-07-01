@@ -12,12 +12,12 @@ data class Result(val sample: Sample) {
         getHardnessResultSingle(sample.volumeHardness2)
     )
     val calciumResult: Float = getAverageResult(
-        getCalciumResultSingle(sample.volumeCalcium1.toFloat()),
-        getCalciumResultSingle(sample.volumeCalcium2.toFloat())
+        getCalciumResultSingle(sample.volumeCalcium1),
+        getCalciumResultSingle(sample.volumeCalcium2)
     )
     val magnesiumResult: Float = getAverageResult(
-        getMagnesiumResultSingle(sample.volumeHardness1.toFloat(), sample.volumeCalcium1.toFloat()),
-        getMagnesiumResultSingle(sample.volumeHardness2.toFloat(), sample.volumeCalcium1.toFloat())
+        getMagnesiumResultSingle(sample.volumeHardness1, sample.volumeCalcium1),
+        getMagnesiumResultSingle(sample.volumeHardness2, sample.volumeCalcium2)
     )
 
     //погрешности
@@ -27,37 +27,29 @@ data class Result(val sample: Sample) {
 
     //расхождения
     val discrepancyHardness =
-        abs(
-            getHardnessResultSingle(sample.volumeHardness1.toFloat()) - getHardnessResultSingle(
-                sample.volumeHardness2.toFloat()
-            )
-        )
+        abs(getHardnessResultSingle(sample.volumeHardness1) - getHardnessResultSingle(sample.volumeHardness2))
     val discrepancyCalcium =
-        abs(getCalciumResultSingle(sample.volumeCalcium1.toFloat()) - getCalciumResultSingle(sample.volumeCalcium2.toFloat()))
+        abs(getCalciumResultSingle(sample.volumeCalcium1) - getCalciumResultSingle(sample.volumeCalcium2))
     val discrepancyMagnesium = abs(
         getMagnesiumResultSingle(
-            sample.volumeHardness1.toFloat(),
-            sample.volumeCalcium1.toFloat()
+            sample.volumeHardness1,
+            sample.volumeCalcium1
         ) - getMagnesiumResultSingle(
-            sample.volumeHardness2.toFloat(),
-            sample.volumeCalcium1.toFloat()
+            sample.volumeHardness2,
+            sample.volumeCalcium2
         )
     )
-
     //нормативы
-    val standardHardness = discrepancyHardness * 0.06f
+    val standardHardness = hardnessResult * 0.06f
     val standardCalcium = when {
-        calciumResult <= 2.0 -> discrepancyCalcium * 0.22f
-        calciumResult in 2.0..10.0 -> discrepancyCalcium * 0.14f
-        calciumResult >= 10.0 -> discrepancyCalcium * 0.08f
+        calciumResult <= 2.0 -> calciumResult * 0.22f
+        calciumResult in 2.0..10.0 -> calciumResult * 0.14f
+        calciumResult >= 10.0 -> calciumResult * 0.08f
         else -> {
             0f
         }
     }
-    val condition = isCondition()
-
-    val standardMagnesium = discrepancyMagnesium * 0.02f
-
+    val standardMagnesium = magnesiumResult * 0.02f
     fun getHardnessResultSingle(volume: Float): Float {
         return (2f * volume * sample.trillon.toFloat() * 1000f) / sample.volumeSample
     }
@@ -67,7 +59,7 @@ data class Result(val sample: Sample) {
     }
 
     fun getMagnesiumResultSingle(volH: Float, volC: Float): Float {
-        return (((volH - volC) * sample.trillon.toFloat() * 24.32 * 1000) / sample.volumeSample).toFloat()
+        return (((volH - volC) * sample.trillon.toFloat() * 24.32f * 1000f) / sample.volumeSample.toFloat())
     }
 
     fun calciumDelta(result: Float): Float {
@@ -79,27 +71,23 @@ data class Result(val sample: Sample) {
         return 0f
     }
 
-    //условие сходимости
-    fun isCondition(): Boolean {
-        return discrepancyHardness <= standardHardness && discrepancyCalcium <= standardCalcium && discrepancyMagnesium <= standardMagnesium
-    }
-
     //расхождение
     fun getDiscrepancy(): String {
         val discrepancyHardness: Float =
-            abs(getHardnessResultSingle(sample.volumeHardness1) - getHardnessResultSingle(sample.volumeHardness2))
+            abs(getHardnessResultSingle(sample.volumeHardness1) - getHardnessResultSingle(sample.volumeHardness2)).roundDeltaToHundredths()
         val discrepancyCalcium: Float =
-            abs(getCalciumResultSingle(sample.volumeCalcium1) - getCalciumResultSingle(sample.volumeCalcium2))
+            abs(getCalciumResultSingle(sample.volumeCalcium1) - getCalciumResultSingle(sample.volumeCalcium2)).roundDeltaToHundredths()
         val discrepancyMagnesium: Float = abs(
             getMagnesiumResultSingle(
                 sample.volumeHardness1,
                 sample.volumeCalcium1
             ) - getMagnesiumResultSingle(sample.volumeHardness2, sample.volumeCalcium2)
-        )
-        return "Расхождение: " +
-                "\n Жесткость:$discrepancyHardness " +
-                "\n Калций:$discrepancyCalcium " +
-                "\n Магний:$discrepancyMagnesium"
+        ).roundDeltaToHundredths()
+        return "Расхождение: \n" +
+                "Жесткость: $discrepancyHardness \n" +
+                "Кальций: $discrepancyCalcium \n" +
+                "Магний: $discrepancyMagnesium \n" +
+                ""
     }
 
     //норматив
@@ -117,9 +105,10 @@ data class Result(val sample: Sample) {
         Log.d("standart", standardCalcium.toString())
         val standardMagnesium = (magnesiumResult * 0.02f).roundDeltaToHundredths()
         return "Норматив: \n" +
-                "Жесткость:$standardHardness \n" +
-                "Кальций:$standardCalcium \n" +
-                "Магний:$standardMagnesium"
+                "Жесткость: $standardHardness \n" +
+                "Кальций: $standardCalcium \n" +
+                "Магний: $standardMagnesium \n" +
+                ""
     }
 
 }
@@ -142,7 +131,7 @@ fun Float.roundDeltaTo1000(): Float {
 
 fun Float.parseResultWithDeltaToString(delta: Float): String {
     when {
-        delta >= 3 -> return "${this.roundToInt()} + ${delta.roundToInt()}"
+        delta >= 3 -> return "${this.roundToInt()} ± ${delta.roundToInt()}"
         delta in 0.3..3.0 -> return "${this.roundDeltaToTenth()} ± ${delta.roundDeltaToTenth()}"
         delta in 0.03..0.3 -> return "${this.roundDeltaToHundredths()} ± ${delta.roundDeltaToHundredths()}"
         delta <= 0.03 -> return "${this.roundDeltaTo1000()} ± ${delta.roundDeltaTo1000()}"
@@ -150,5 +139,8 @@ fun Float.parseResultWithDeltaToString(delta: Float): String {
     return ""
 }
 
-
+//условие сходимости
+fun Result.isCondition(): Boolean {
+    return this.discrepancyHardness <= standardHardness && discrepancyCalcium <= standardCalcium && discrepancyMagnesium <= standardMagnesium
+}
 

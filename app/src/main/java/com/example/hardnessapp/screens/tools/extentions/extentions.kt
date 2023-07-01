@@ -2,6 +2,7 @@ package com.example.hardnessapp.screens.tools.extentions
 
 import android.util.Log
 import com.example.hardnessapp.data.Sample
+import com.example.hardnessapp.screens.tools.extentions.Result
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -15,14 +16,18 @@ fun Sample.getHardnessResult(trillon: Float): String {
 }
 
 fun Sample.getHardnessResultToFloat(): Float {
-    val result1 = (2f * this.volumeHardness1.toFloat() * this.trillon.toFloat() * 1000f) / this.volumeSample
-    val result2 = (2f * this.volumeHardness2.toFloat() * this.trillon.toFloat() * 1000f) / this.volumeSample
+    val result1 =
+        (2f * this.volumeHardness1.toFloat() * this.trillon.toFloat() * 1000f) / this.volumeSample
+    val result2 =
+        (2f * this.volumeHardness2.toFloat() * this.trillon.toFloat() * 1000f) / this.volumeSample
     return (result1 + result2) / 2f
 }
 
 fun Sample.getCalciumResultSingle(): Float {
-    val result1 = (40.08f * this.trillon.toFloat() * this.volumeCalcium1.toFloat() * 1000) / this.volumeSample
-    val result2 = (40.08f * this.trillon.toFloat() * this.volumeCalcium2.toFloat() * 1000) / this.volumeSample
+    val result1 =
+        (40.08f * this.trillon.toFloat() * this.volumeCalcium1.toFloat() * 1000) / this.volumeSample
+    val result2 =
+        (40.08f * this.trillon.toFloat() * this.volumeCalcium2.toFloat() * 1000) / this.volumeSample
     return (result1 + result2) / 2f
 }
 

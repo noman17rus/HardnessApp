@@ -67,10 +67,10 @@ fun ModalBottomSheetSample(viewModel: SampleViewModel, navigator: NavHostControl
                 )
                 {
                     val result = Result(it)
-                    Text(text = "Number ${it.number}")
-                    Text(text = "Hardness ${result.hardnessResult.parseResultWithDeltaToString(result.hardnessDelta)}")
-                    Text(text = "Calcium ${result.calciumResult.parseResultWithDeltaToString(result.calciumDelta)}")
-                    Text(text = "Magnesium ${result.magnesiumResult.parseResultWithDeltaToString(result.magnesiumDelta)}")
+                    Text(text = "№ пробы: ${it.number}")
+                    Text(text = "Жесткость: ${result.hardnessResult.parseResultWithDeltaToString(result.hardnessDelta)}")
+                    Text(text = "Кальций: ${result.calciumResult.parseResultWithDeltaToString(result.calciumDelta)}")
+                    Text(text = "Магний: ${result.magnesiumResult.parseResultWithDeltaToString(result.magnesiumDelta)}")
                     Text(text = "")
                 }
             }
@@ -105,20 +105,20 @@ fun getListForBoxSheet(sample: Sample): Map<String, String> {
 fun BoxSheet(map: Map<String, String>) {
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-
+            Text(text = "Номер пробы: ${map["Номер"] ?: ""}")
         }
         Row(modifier = Modifier.fillMaxWidth()) {
             Column(
                 modifier = Modifier.weight(1f),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = map.get("Расхождение")?: "")
+                Text(text = map["Расхождение"] ?: "")
             }
             Column(
                 modifier = Modifier.weight(1f),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = map.get("Норматив")?: "")
+                Text(text = map["Норматив"] ?: "")
             }
         }
 

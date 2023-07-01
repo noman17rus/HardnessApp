@@ -48,9 +48,27 @@ fun MainScreen(viewModel: SampleViewModel, navigator: NavHostController) {
                 ) {
                     val result = Result(it)
                     Text(text = "Number ${it.number}")
-                    Text(text = "Hardness ${result.hardnessResult.parseResultWithDeltaToString(result.hardnessDelta)}")
-                    Text(text = "Calcium ${result.calciumResult.parseResultWithDeltaToString(result.calciumDelta)}")
-                    Text(text = "Magnesium ${result.magnesiumResult.parseResultWithDeltaToString(result.magnesiumDelta)}")
+                    Text(
+                        text = "Жесткостьт: ${
+                            result.hardnessResult.parseResultWithDeltaToString(
+                                result.hardnessDelta
+                            )
+                        }"
+                    )
+                    Text(
+                        text = "Кальций ${
+                            result.calciumResult.parseResultWithDeltaToString(
+                                result.calciumDelta
+                            )
+                        }"
+                    )
+                    Text(
+                        text = "Магний ${
+                            result.magnesiumResult.parseResultWithDeltaToString(
+                                result.magnesiumDelta
+                            )
+                        }"
+                    )
                     Text(text = "")
                 }
 
