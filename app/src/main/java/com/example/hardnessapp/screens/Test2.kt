@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -30,9 +31,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import com.example.hardnessapp.data.Sample
 import com.example.hardnessapp.screens.tools.extentions.FAB
-import com.example.hardnessapp.screens.tools.extentions.getDiscrepancy
-import com.example.hardnessapp.screens.tools.extentions.getStandard
-import com.example.hardnessapp.screens.tools.extentions.isCondition
+import com.example.hardnessapp.screens.tools.extentions.Result
+import com.example.hardnessapp.screens.tools.extentions.parseResultWithDeltaToString
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnrememberedMutableState", "UnusedMaterial3ScaffoldPaddingParameter")
@@ -66,10 +66,11 @@ fun ModalBottomSheetSample(viewModel: SampleViewModel, navigator: NavHostControl
                         .fillMaxWidth()
                 )
                 {
-                    Text(text = "Номер пробы: ${it.number}")
-                    Text(text = "Жесткость: ${it.resultHardness}")
-                    Text(text = "Кальций: ${it.resultCalcium}")
-                    Text(text = "Магний: ${it.resultMagnesium}")
+                    val result = Result(it)
+                    Text(text = "Number ${it.number}")
+                    Text(text = "Hardness ${result.hardnessResult.parseResultWithDeltaToString(result.hardnessDelta)}")
+                    Text(text = "Calcium ${result.calciumResult.parseResultWithDeltaToString(result.calciumDelta)}")
+                    Text(text = "Magnesium ${result.magnesiumResult.parseResultWithDeltaToString(result.magnesiumDelta)}")
                     Text(text = "")
                 }
             }
@@ -93,9 +94,10 @@ fun ModalBottomSheetSample(viewModel: SampleViewModel, navigator: NavHostControl
 
 fun getListForBoxSheet(sample: Sample): Map<String, String> {
     val list = mutableMapOf<String, String>()
-    list.put("Расхождение", "${getDiscrepancy(sample)}")
-    list.put("Норматив", "${getStandard(sample)}")
-    list.put("Номер", "${sample.number}")
+    val result = Result(sample)
+    list["Расхождение"] = result.getDiscrepancy()
+    list["Норматив"] = result.getStandard()
+    list["Номер"] = sample.number
     return list
 }
 
@@ -119,5 +121,6 @@ fun BoxSheet(map: Map<String, String>) {
                 Text(text = map.get("Норматив")?: "")
             }
         }
+
     }
 }

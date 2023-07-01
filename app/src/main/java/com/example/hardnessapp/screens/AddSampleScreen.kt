@@ -28,9 +28,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.hardnessapp.data.Sample
 import com.example.hardnessapp.navigation.AllScreens
+import com.example.hardnessapp.screens.tools.extentions.Result
 import com.example.hardnessapp.screens.tools.extentions.getCalciumResult
 import com.example.hardnessapp.screens.tools.extentions.getHardnessResult
 import com.example.hardnessapp.screens.tools.extentions.getMagnesiumResult
+import com.example.hardnessapp.screens.tools.extentions.parseResultWithDeltaToString
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -42,23 +44,22 @@ fun AddSampleScreen(viewModel: SampleViewModel, navigator: NavHostController) {
     number = viewModel.number.observeAsState().value.toString()
     var trillon by remember { mutableStateOf("0.0100") }
     trillon = viewModel.trillon.observeAsState().value.toString()
-    val volumeH1 = remember { mutableStateOf("") }
-    volumeH1.value = viewModel.volH1.observeAsState().value.toString()
-    val volumeH2 = remember { mutableStateOf("") }
-    volumeH2.value = viewModel.volH2.observeAsState().value.toString()
-    val volumeC1 = remember { mutableStateOf("") }
-    volumeC1.value = viewModel.volC1.observeAsState().value.toString()
-    val volumeC2 = remember { mutableStateOf("") }
-    volumeC2.value = viewModel.volC2.observeAsState().value.toString()
-    val resultHardness = remember { mutableStateOf("") }
-    val resultCalcium = remember { mutableStateOf("") }
-    val resultMagnesium = remember { mutableStateOf("") }
-    val condition = remember { mutableStateOf(false) }
+    var volumeH1 by remember { mutableStateOf("") }
+    volumeH1 = viewModel.volH1.observeAsState().value.toString()
+    var volumeH2 by remember { mutableStateOf("") }
+    volumeH2 = viewModel.volH2.observeAsState().value.toString()
+    var volumeC1 by remember { mutableStateOf("") }
+    volumeC1 = viewModel.volC1.observeAsState().value.toString()
+    var volumeC2 by remember { mutableStateOf("") }
+    volumeC2 = viewModel.volC2.observeAsState().value.toString()
 
-    val sample by remember {
-        mutableStateOf(Sample())
-    }
+    var resultHardness by remember { mutableStateOf("") }
+    var resultCalcium by remember { mutableStateOf("") }
+    var resultMagnesium by remember { mutableStateOf("") }
+    val condition by remember { mutableStateOf(false) }
 
+    val sample = viewModel.createSample()
+    Log.d("Sample", "$sample")
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.SpaceEvenly
@@ -71,7 +72,7 @@ fun AddSampleScreen(viewModel: SampleViewModel, navigator: NavHostController) {
             ),
             label = { Text(text = "Номер пробы") },
             modifier = Modifier.align(Alignment.CenterHorizontally),
-            value = number.value, onValueChange = { viewModel.editNumber(it) },
+            value = number, onValueChange = { viewModel.editNumber(it) },
         )
         OutlinedTextField(
             keyboardOptions = KeyboardOptions(
@@ -80,7 +81,7 @@ fun AddSampleScreen(viewModel: SampleViewModel, navigator: NavHostController) {
             ),
             label = { Text(text = "Концентрация триллона-Б") },
             modifier = Modifier.align(Alignment.CenterHorizontally),
-            value = trillon.value, onValueChange = { viewModel.editTrillon(it) }
+            value = trillon, onValueChange = { viewModel.editTrillon(it) }
         )
         Row(horizontalArrangement = Arrangement.SpaceEvenly) {
             Column(
@@ -98,7 +99,7 @@ fun AddSampleScreen(viewModel: SampleViewModel, navigator: NavHostController) {
                         imeAction = ImeAction.Next
                     ),
                     label = { Text(text = "V1") },
-                    value = volumeH1.value,
+                    value = volumeH1,
                     onValueChange = { viewModel.editVolumeHardness1(it) })
                 OutlinedTextField(
                     keyboardOptions = KeyboardOptions(
@@ -106,7 +107,7 @@ fun AddSampleScreen(viewModel: SampleViewModel, navigator: NavHostController) {
                         imeAction = ImeAction.Next
                     ),
                     label = { Text(text = "V2") },
-                    value = volumeH2.value,
+                    value = volumeH2,
                     onValueChange = { viewModel.editVolumeHardness2(it) })
             }
             Column(
@@ -124,7 +125,7 @@ fun AddSampleScreen(viewModel: SampleViewModel, navigator: NavHostController) {
                         imeAction = ImeAction.Next
                     ),
                     label = { Text(text = "V1") },
-                    value = volumeC1.value,
+                    value = volumeC1,
                     onValueChange = { viewModel.editVolumeCalcium1(it) })
                 OutlinedTextField(
                     keyboardOptions = KeyboardOptions(
@@ -132,61 +133,40 @@ fun AddSampleScreen(viewModel: SampleViewModel, navigator: NavHostController) {
                         imeAction = ImeAction.Done
                     ),
                     label = { Text(text = "V2") },
-                    value = volumeC2.value,
+                    value = volumeC2,
                     onValueChange = { viewModel.editVolumeCalcium2(it) })
             }
         }
 
-        try {
-            val sample = Sample(
-                number = number.value,
-                trillon = trillon.value,
-                volumeHardness1 = volumeH1.value.toFloat(),
-                volumeHardness2 = volumeH2.value.toFloat(),
-                volumeCalcium1 = volumeC1.value.toFloat(),
-                volumeCalcium2 = volumeC2.value.toFloat(),
-                resultHardness = resultHardness.value,
-                resultCalcium = resultCalcium.value,
-                resultMagnesium = resultMagnesium.value
-            )
-            resultHardness.value = sample.getHardnessResult(trillon.value.toFloat())
-            resultCalcium.value =
-                sample.getCalciumResult(trillon = trillon.value.toFloat())
-            resultMagnesium.value = getMagnesiumResult(sample)
-        } catch (e: Exception) {
-        }
 
-        Text(text = "Жесткость: ${resultHardness.value}")
-        Text(text = "Кальций: ${resultCalcium.value}")
-        Text(text = "Магний: ${resultMagnesium.value}")
+        Text(text = "Жесткость: $resultHardness")
+        Text(text = "Кальций: $resultCalcium")
+        Text(text = "Магний: $resultMagnesium")
         Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
             Button(onClick = {
                 navigator.navigate(AllScreens.MainScreen.route)
             }, modifier = Modifier.weight(1f)) {
                 Text(text = "Отмена")
             }
+            Button(onClick = {
+                val result = Result(sample)
+                resultHardness = result.hardnessResult.parseResultWithDeltaToString(result.hardnessDelta)
+                resultCalcium = result.calciumResult.parseResultWithDeltaToString(result.calciumDelta)
+                resultMagnesium = result.magnesiumResult.parseResultWithDeltaToString(result.magnesiumDelta)
+                Log.d("result", resultHardness)
+            }) {
+
+            }
 
             Button(
                 onClick = {
-                    viewModel.addSample(
-                        sample = Sample(
-                            number = number.value,
-                            trillon = trillon.value,
-                            volumeHardness1 = volumeH1.value.toFloat(),
-                            volumeHardness2 = volumeH2.value.toFloat(),
-                            volumeCalcium1 = volumeC1.value.toFloat(),
-                            volumeCalcium2 = volumeC2.value.toFloat(),
-                            resultHardness = resultHardness.value,
-                            resultCalcium = resultCalcium.value,
-                            resultMagnesium = resultMagnesium.value
-                        )
-                    )
+                    viewModel.addSample(sample = sample)
                     navigator.navigate(route = AllScreens.MainScreen.route)
                 },
                 modifier = Modifier.weight(1f)
             ) {
                 val text:String
-                text = when (condition.value) {
+                text = when (condition) {
                     false -> "не соблюдены условия сходимости"
                     true -> "сохранить"
                 }

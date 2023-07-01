@@ -68,9 +68,9 @@ fun Test(viewModel: SampleViewModel, navigator: NavHostController) {
                                 }
                         ) {
                             Text(text = "Number ${it.number}")
-                            Text(text = "Hardness ${it.resultHardness}")
-                            Text(text = "Calcium ${it.resultCalcium}")
-                            Text(text = "Magnesium ${it.resultMagnesium}")
+                            Text(text = "Hardness ${it}")
+                            Text(text = "Calcium ${it}")
+                            Text(text = "Magnesium ${it}")
                             Text(text = "")
                         }
                     }

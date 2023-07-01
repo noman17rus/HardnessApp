@@ -21,6 +21,8 @@ import androidx.navigation.NavHostController
 import com.example.hardnessapp.data.Sample
 import com.example.hardnessapp.navigation.AllScreens
 import com.example.hardnessapp.screens.tools.extentions.FAB
+import com.example.hardnessapp.screens.tools.extentions.Result
+import com.example.hardnessapp.screens.tools.extentions.parseResultWithDeltaToString
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -44,10 +46,11 @@ fun MainScreen(viewModel: SampleViewModel, navigator: NavHostController) {
                             viewModel.deleteSample(it)
                         }
                 ) {
+                    val result = Result(it)
                     Text(text = "Number ${it.number}")
-                    Text(text = "Hardness ${it.resultHardness}")
-                    Text(text = "Calcium ${it.resultCalcium}")
-                    Text(text = "Magnesium ${it.resultMagnesium}")
+                    Text(text = "Hardness ${result.hardnessResult.parseResultWithDeltaToString(result.hardnessDelta)}")
+                    Text(text = "Calcium ${result.calciumResult.parseResultWithDeltaToString(result.calciumDelta)}")
+                    Text(text = "Magnesium ${result.magnesiumResult.parseResultWithDeltaToString(result.magnesiumDelta)}")
                     Text(text = "")
                 }
 

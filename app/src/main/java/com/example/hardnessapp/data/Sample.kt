@@ -3,6 +3,8 @@ package com.example.hardnessapp.data
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.hardnessapp.screens.tools.extentions.Result
+import com.example.hardnessapp.screens.tools.extentions.parseResultWithDeltaToString
 
 @Entity
 data class Sample(
@@ -20,10 +22,4 @@ data class Sample(
   val volumeCalcium1: Float,
   @ColumnInfo
   val volumeCalcium2: Float,
-  @ColumnInfo
-  val resultHardness: String,
-  @ColumnInfo
-  val resultCalcium: String,
-  @ColumnInfo
-  val resultMagnesium: String,
 )

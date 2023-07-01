@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.hardnessapp.data.Repository
 import com.example.hardnessapp.data.SampleRepository
 import com.example.hardnessapp.data.Sample
+import com.example.hardnessapp.screens.tools.extentions.parseResultWithDeltaToString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -22,16 +23,16 @@ class SampleViewModel(private val database: Repository) : ViewModel() {
     private val _trillon = MutableLiveData("0.0100")
     val trillon: LiveData<String> = _trillon
 
-    private val _volH1 = MutableLiveData("")
+    private val _volH1 = MutableLiveData("0")
     val volH1: LiveData<String> = _volH1
 
-    private val _volH2 = MutableLiveData("")
+    private val _volH2 = MutableLiveData("0")
     val volH2: LiveData<String> = _volH2
 
-    private val _volC1 = MutableLiveData("")
+    private val _volC1 = MutableLiveData("0")
     val volC1: LiveData<String> = _volC1
 
-    private val _volC2 = MutableLiveData("")
+    private val _volC2 = MutableLiveData("0")
     val volC2: LiveData<String> = _volC2
 
     private val _condition = MutableLiveData(false)
@@ -39,6 +40,29 @@ class SampleViewModel(private val database: Repository) : ViewModel() {
 
     private val _listOfSamples = MutableLiveData<List<Sample>>()
     val listOfSamples: LiveData<List<Sample>> = _listOfSamples
+
+    private val _sample = MutableLiveData<Sample>()
+    val sample: LiveData<Sample> = _sample
+
+    private val _resultHardness = MutableLiveData("")
+    val resultHardness = _resultHardness
+
+    private val _resultCalcium = MutableLiveData("")
+    val resultCalcium = _resultCalcium
+
+    private val _resultMagnesium = MutableLiveData("")
+    val resultMagnesium = _resultMagnesium
+
+    fun createSample(): Sample {
+        return Sample(
+            number = _number.value ?: "0",
+            trillon = _trillon.value ?: "0",
+            volumeHardness1 = _volH1.value?.toFloat() ?: 0f,
+            volumeHardness2 = _volH2.value?.toFloat() ?: 0f,
+            volumeCalcium1 = _volC1.value?.toFloat() ?: 0f,
+            volumeCalcium2 = _volC2.value?.toFloat() ?: 0f,
+        )
+    }
 
     fun editNumber(string: String) {
         _number.value = string
