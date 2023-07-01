@@ -177,6 +177,12 @@ fun AddSampleScreen(viewModel: SampleViewModel, navigator: NavHostController) {
                 onClick = {
                     viewModel.addSample(sample = sample)
                     navigator.navigate(route = AllScreens.MainScreen.route)
+                    viewModel.editNumber("")
+                    viewModel.editNumber("")
+                    viewModel.editVolumeHardness1("")
+                    viewModel.editVolumeHardness2("")
+                    viewModel.editVolumeCalcium1("")
+                    viewModel.editVolumeCalcium2("")
                 },
                 modifier = Modifier
                     .weight(1f)

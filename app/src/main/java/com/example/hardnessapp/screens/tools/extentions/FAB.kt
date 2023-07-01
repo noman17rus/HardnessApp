@@ -16,7 +16,7 @@ import com.example.hardnessapp.navigation.AllScreens
 fun FAB(navigator: NavHostController) {
     FloatingActionButton(
         onClick = { navigator.navigate(route = AllScreens.AddScreen.route) },
-        modifier = Modifier.size(50.dp),
+        modifier = Modifier.size(70.dp),
         shape = ShapeDefaults.Medium
     ) {
         Icon(Icons.Default.Add, contentDescription = null)
