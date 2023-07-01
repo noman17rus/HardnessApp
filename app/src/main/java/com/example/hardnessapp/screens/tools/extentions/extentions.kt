@@ -14,6 +14,18 @@ fun Sample.getHardnessResult(trillon: Float): String {
     return getRoundResult(average = average, delta = delta)
 }
 
+fun Sample.getHardnessResultToFloat(): Float {
+    val result1 = (2f * this.volumeHardness1 * this.trillon.toFloat() * 1000f) / this.volumeSample
+    val result2 = (2f * this.volumeHardness2 * this.trillon.toFloat() * 1000f) / this.volumeSample
+    return (result1 + result2) / 2f
+}
+
+fun Sample.getCalciumResultSingle(): Float {
+    val result1 = (40.08f * this.trillon.toFloat() * this.volumeCalcium1 * 1000) / this.volumeSample
+    val result2 = (40.08f * this.trillon.toFloat() * this.volumeCalcium2 * 1000) / this.volumeSample
+    return (result1 + result2) / 2f
+}
+
 fun Sample.getCalciumResult(trillon: Float): String {
     val result1 = (40.08f * trillon * this.volumeCalcium1 * 1000) / this.volumeSample
     val result2 = (40.08f * trillon * this.volumeCalcium2 * 1000) / this.volumeSample
@@ -28,26 +40,14 @@ fun Sample.getCalciumResult(trillon: Float): String {
     return getRoundResult(average = average, delta = delta)
 }
 
-fun getMagnesiumResult(sample: Sample, trillon: Float): String {
+fun getMagnesiumResult(sample: Sample): String {
     val result1 =
-        (((sample.volumeHardness1 - sample.volumeCalcium1) * trillon * 24.32 * 1000) / sample.volumeSample).toFloat()
+        (((sample.volumeHardness1 - sample.volumeCalcium1) * sample.trillon.toFloat() * 24.32 * 1000) / sample.volumeSample).toFloat()
     val result2 =
-        (((sample.volumeHardness2 - sample.volumeCalcium2) * trillon * 24.32 * 1000) / sample.volumeSample).toFloat()
+        (((sample.volumeHardness2 - sample.volumeCalcium2) * sample.trillon.toFloat() * 24.32 * 1000) / sample.volumeSample).toFloat()
     val average = (result1 + result2) / 2f
     val delta = (result1 + result2) / 2f * 0.02f
     return getRoundResult(average = average, delta = delta)
-}
-
-fun Float.roundDeltaToTenth(): Float {
-    return ((this * 10f).roundToInt() / 10f)
-}
-
-fun Float.roundDeltaToHundredths(): Float {
-    return ((this * 100f).roundToInt() / 100f)
-}
-
-fun Float.roundDeltaTo1000(): Float {
-    return ((this * 1000f).roundToInt() / 1000f)
 }
 
 
@@ -61,38 +61,40 @@ fun getRoundResult(average: Float, delta: Float): String {
     return ""
 }
 
-//условие сходимости
-fun Sample.condition(trillon: Float): Boolean {
-    //расхождения
-    val discrepancyHardness: Float = abs(this.volumeHardness1 - this.volumeHardness2)
-    val discrepancyCalcium: Float = abs(this.volumeCalcium1 - this.volumeCalcium2)
+
+//расхождение
+fun getDiscrepancy(sample: Sample): String {
+    val discrepancyHardness: Float = abs(sample.volumeHardness1 - sample.volumeHardness2)
+    val discrepancyCalcium: Float = abs(sample.volumeCalcium1 - sample.volumeCalcium2)
     val discrepancyMagnesium: Float = abs(
-        getMagnesiumResult(
-            this,
-            trillon = trillon
-        ).toFloat() -
-                getMagnesiumResult(
-                    this,
-                    trillon = trillon
-                ).toFloat()
+        ((sample.volumeHardness1 - sample.volumeCalcium1) * sample.trillon.toFloat() * 24.32f * 100f) / sample.volumeSample - ((sample.volumeHardness2 - sample.volumeCalcium2) * sample.trillon.toFloat() * 24.32f * 100f) / sample.volumeSample
+    )
+    return "Расхождение: \n Жесткость:$discrepancyHardness \n Калций:$discrepancyCalcium \n Магний:$discrepancyMagnesium"
+}
+
+fun getStandard(sample: Sample): String {
+    val discrepancyHardness: Float = abs(sample.volumeHardness1 - sample.volumeHardness2)
+    val discrepancyCalcium: Float = abs(sample.volumeCalcium1 - sample.volumeCalcium2)
+    val discrepancyMagnesium: Float = abs(
+        ((sample.volumeHardness1 - sample.volumeCalcium1) * sample.trillon.toFloat() * 24.32f * 100f) / sample.volumeSample - ((sample.volumeHardness2 - sample.volumeCalcium2) * sample.trillon.toFloat() * 24.32f * 100f) / sample.volumeSample
     )
     //норматив
     val standardHardness = discrepancyHardness * 0.06f
     var standardCalcium: Float = 0f
+        //код ниже больше не работает
     when {
-        this.getCalciumResult(trillon = trillon).toFloat() <= 2.0 -> standardCalcium =
+        sample.getCalciumResultSingle() <= 2.0 -> standardCalcium =
             discrepancyCalcium * 0.22f
 
-        this.getCalciumResult(trillon = trillon).toFloat() in 2.0..10.0 -> standardCalcium =
+        sample.getCalciumResultSingle() in 2.0..10.0 -> standardCalcium =
             discrepancyCalcium * 0.14f
 
-        this.getCalciumResult(trillon = trillon).toFloat() >= 10.0 -> standardCalcium =
+        sample.getCalciumResultSingle() >= 10.0 -> standardCalcium =
             discrepancyCalcium * 0.08f
     }
     val standardMagnesium = discrepancyMagnesium * 0.02f
-    Log.d(
-        "hello",
-        "$discrepancyHardness <= standardHardness && discrepancyCalcium <= standardCalcium && discrepancyMagnesium <= standardMagnesium"
-    )
-    return discrepancyHardness <= standardHardness && discrepancyCalcium <= standardCalcium && discrepancyMagnesium <= standardMagnesium
+    return "Норматив: \n" +
+            " Жесткость:$standardHardness \n" +
+            " Калций:$standardCalcium \n" +
+            " Магний:$standardMagnesium"
 }

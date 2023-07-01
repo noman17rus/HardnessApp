@@ -54,4 +54,5 @@ fun MainScreen(viewModel: SampleViewModel, navigator: NavHostController) {
             }
         }
     }
+
 }

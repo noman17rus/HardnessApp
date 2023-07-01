@@ -16,8 +16,10 @@ import com.example.hardnessapp.data.SampleDb
 import com.example.hardnessapp.navigation.AppNavHost
 import com.example.hardnessapp.screens.AddSampleScreen
 import com.example.hardnessapp.screens.MainScreen
+import com.example.hardnessapp.screens.ModalBottomSheetSample
 import com.example.hardnessapp.screens.SampleViewModel
 import com.example.hardnessapp.screens.SampleViewModelFactory
+import com.example.hardnessapp.screens.Test
 import com.example.hardnessapp.ui.theme.HardnessAppTheme
 
 class MainActivity : ComponentActivity() {
