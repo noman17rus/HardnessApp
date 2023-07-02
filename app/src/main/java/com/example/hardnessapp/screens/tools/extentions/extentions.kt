@@ -1,8 +1,11 @@
 package com.example.hardnessapp.screens.tools.extentions
 
 import android.util.Log
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 import com.example.hardnessapp.data.Sample
 import com.example.hardnessapp.screens.tools.extentions.Result
+import java.lang.Exception
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -66,3 +69,13 @@ fun getRoundResult(average: Float, delta: Float): String {
     return ""
 }
 
+fun String.editInputData(): String {
+    return when (this) {
+        "," -> "0.".trim()
+        "." -> "0.".trim()
+        "-" -> "".trim()
+        else -> {
+            this
+        }
+    }
+}

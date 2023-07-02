@@ -1,6 +1,7 @@
 package com.example.hardnessapp.screens
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -41,7 +43,7 @@ import kotlin.math.roundToInt
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddSampleScreen(viewModel: SampleViewModel, navigator: NavHostController) {
-
+    val context = LocalContext.current
     var number by remember { mutableStateOf("") }
     number = viewModel.number.observeAsState().value.toString()
     var sampleVolume by remember { mutableStateOf("") }
@@ -71,20 +73,27 @@ fun AddSampleScreen(viewModel: SampleViewModel, navigator: NavHostController) {
         else -> result.magnesiumResult.parseResultWithDeltaToString(result.magnesiumDelta)
     }
     condition = result.isCondition()
-    Log.d("res", condition.toString())
+
+    var isError by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.SpaceEvenly
     )
     {
         OutlinedTextField(
+            isError = isError,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Decimal,
                 imeAction = ImeAction.Next
             ),
             label = { Text(text = "Номер пробы") },
             modifier = Modifier.align(Alignment.CenterHorizontally),
-            value = number, onValueChange = { viewModel.editNumber(it) },
+            value = number,
+            onValueChange = {
+                viewModel.editNumber(it)
+                isError = false
+            },
         )
         OutlinedTextField(
             keyboardOptions = KeyboardOptions(
@@ -166,29 +175,36 @@ fun AddSampleScreen(viewModel: SampleViewModel, navigator: NavHostController) {
         Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
             Button(
                 onClick = {
-                navigator.navigate(AllScreens.MainScreen.route)
-            }, modifier = Modifier
+                    navigator.navigate(AllScreens.MainScreen.route)
+                }, modifier = Modifier
                     .weight(1f)
-                    .height(54.dp)) {
+                    .height(54.dp)
+            ) {
                 Text(text = "Отмена")
             }
             Button(
-                enabled = condition,
+                enabled = condition && !isError,
                 onClick = {
-                    viewModel.addSample(sample = sample)
-                    navigator.navigate(route = AllScreens.MainScreen.route)
-                    viewModel.editNumber("")
-                    viewModel.editNumber("")
-                    viewModel.editVolumeHardness1("")
-                    viewModel.editVolumeHardness2("")
-                    viewModel.editVolumeCalcium1("")
-                    viewModel.editVolumeCalcium2("")
+                    if (number == "") {
+                        isError = true
+                        Toast.makeText(context, "Введите номер пробы", Toast.LENGTH_SHORT).show()
+                    } else {
+                        viewModel.addSample(sample = sample)
+                        navigator.navigate(route = AllScreens.MainScreen.route)
+                        viewModel.editNumber("")
+                        viewModel.editNumber("")
+                        viewModel.editVolumeHardness1("")
+                        viewModel.editVolumeHardness2("")
+                        viewModel.editVolumeCalcium1("")
+                        viewModel.editVolumeCalcium2("")
+                    }
                 },
                 modifier = Modifier
                     .weight(1f)
                     .height(54.dp),
             ) {
-                Text(textAlign = TextAlign.Center,
+                Text(
+                    textAlign = TextAlign.Center,
                     text = when (condition) {
                         true -> "Сохранить"
                         false -> "Сходимость не выполнена"

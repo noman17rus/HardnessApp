@@ -1,5 +1,6 @@
 package com.example.hardnessapp
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,10 +18,10 @@ import com.example.hardnessapp.screens.SampleViewModel
 import com.example.hardnessapp.screens.SampleViewModelFactory
 
 class MainActivity : ComponentActivity() {
+    @SuppressLint("SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-
             val dao = Room.databaseBuilder(this, SampleDb::class.java, "Samples").build().getDao()
             val dataRoom = SampleRepository(dao = dao)
             val viewModel: SampleViewModel = viewModel(factory = SampleViewModelFactory(dataRoom))
@@ -35,4 +36,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
