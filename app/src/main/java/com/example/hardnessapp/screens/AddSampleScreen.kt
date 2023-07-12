@@ -195,7 +195,7 @@ fun AddSampleScreen(viewModel: SampleViewModel, navigator: NavHostController) {
             Button(
                 enabled = condition && !isError,
                 onClick = {
-                    if (number == "") {
+                    if (number.isEmpty()) {
                         isError = true
                         Toast.makeText(context, "Введите номер пробы", Toast.LENGTH_SHORT).show()
                     } else {

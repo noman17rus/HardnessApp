@@ -148,6 +148,5 @@ fun Result.isCondition(): Boolean {
             this.discrepancyHardness <= standardHardness && discrepancyCalcium <= standardCalcium && discrepancyMagnesium <= standardMagnesium
         }
     }
-
 }
 
