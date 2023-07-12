@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -28,6 +29,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.hardnessapp.data.Sample
@@ -41,18 +43,20 @@ import com.example.hardnessapp.screens.tools.extentions.Result
 fun MainScreen(viewModel: SampleViewModel, navigator: NavHostController) {
     var openBottomSheet by rememberSaveable { mutableStateOf(false) }
     var skipPartiallyExpanded by remember { mutableStateOf(false) }
-    var edgeToEdgeEnabled by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
     val bottomSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = skipPartiallyExpanded
     )
     val list: MutableState<List<Sample>> = remember { mutableStateOf(listOf()) }
-    list.value = viewModel.listOfSamples.observeAsState(listOf()).value
+    list.value = viewModel.listOfSamples.observeAsState(listOf()).value.sortedByDescending { it.number }
     viewModel.readAllSamples()
 
     val sheetContentState: MutableState<Map<String, String>> = remember { mutableStateOf((mapOf())) }
+
     // App content
-    Scaffold(floatingActionButton = { FAB(navigator = navigator) }) {
+    Scaffold(
+        floatingActionButton = { FAB(navigator = navigator) },
+        floatingActionButtonPosition = FabPosition.Center
+    ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -67,13 +71,12 @@ fun MainScreen(viewModel: SampleViewModel, navigator: NavHostController) {
                         .fillMaxWidth()
                 )
                 {
-                    CardSample(sample = it, viewModel)
+                    CardSample(sample = it, viewModel = viewModel)
                 }
             }
 
         }
     }
-
 
     // Sheet content
     if (openBottomSheet) {

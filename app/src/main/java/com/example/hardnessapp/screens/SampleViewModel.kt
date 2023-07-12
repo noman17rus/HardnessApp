@@ -1,19 +1,17 @@
 package com.example.hardnessapp.screens
 
-import android.widget.Toast
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.hardnessapp.data.Repository
+import com.example.hardnessapp.data.SampleRepository
 import com.example.hardnessapp.data.Sample
 import com.example.hardnessapp.screens.tools.extentions.editInputData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class SampleViewModel(private val database: Repository) : ViewModel() {
+class SampleViewModel(private val database: SampleRepository) : ViewModel() {
     private val _number = MutableLiveData("")
     val number: LiveData<String> = _number
 
@@ -48,25 +46,25 @@ class SampleViewModel(private val database: Repository) : ViewModel() {
             volumeHardness1 = when (_volH1.value) {
                 "" -> 0f
                 else -> {
-                    _volH1.value?.replace(',', '.')?.toFloat() ?: 0f
+                    _volH1.value?.toFloat() ?: 0f
                 }
             },
             volumeHardness2 = when (_volH2.value) {
                 "" -> 0f
                 else -> {
-                    _volH2.value?.replace(',', '.')?.toFloat() ?: 0f
+                    _volH2.value?.toFloat() ?: 0f
                 }
             },
             volumeCalcium1 = when (_volC1.value) {
                 "" -> 0f
                 else -> {
-                    _volC1.value?.replace(',', '.')?.toFloat() ?: 0f
+                    _volC1.value?.toFloat() ?: 0f
                 }
             },
             volumeCalcium2 = when (_volC2.value) {
                 "" -> 0f
                 else -> {
-                    _volC2.value?.replace(',', '.')?.toFloat() ?: 0f
+                    _volC2.value?.toFloat() ?: 0f
                 }
             }
         )
@@ -121,7 +119,7 @@ class SampleViewModel(private val database: Repository) : ViewModel() {
 
 }
 
-class SampleViewModelFactory(private val _database: Repository) :
+class SampleViewModelFactory(private val _database: SampleRepository) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return SampleViewModel(database = _database) as T

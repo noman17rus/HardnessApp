@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
-import com.example.hardnessapp.data.SampleRepository
+import com.example.hardnessapp.data.SampleSampleRepositoryImpl
 import com.example.hardnessapp.data.SampleDb
 import com.example.hardnessapp.navigation.AppNavHost
 import com.example.hardnessapp.screens.SampleViewModel
@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val dao = Room.databaseBuilder(this, SampleDb::class.java, "Samples").build().getDao()
-            val dataRoom = SampleRepository(dao = dao)
+            val dataRoom = SampleSampleRepositoryImpl(dao = dao)
             val viewModel: SampleViewModel = viewModel(factory = SampleViewModelFactory(dataRoom))
             val navigator = rememberNavController()
                 // A surface container using the 'background' color from the theme

@@ -5,7 +5,7 @@ import com.example.hardnessapp.data.Sample
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
-data class Result(val sample: Sample) {
+class Result(val sample: Sample) {
     //результаты
     val hardnessResult: Float = getAverageResult(
         getHardnessResultSingle(sample.volumeHardness1),
@@ -15,10 +15,12 @@ data class Result(val sample: Sample) {
         getCalciumResultSingle(sample.volumeCalcium1),
         getCalciumResultSingle(sample.volumeCalcium2)
     )
-    val magnesiumResult: Float = getAverageResult(
-        getMagnesiumResultSingle(sample.volumeHardness1, sample.volumeCalcium1),
-        getMagnesiumResultSingle(sample.volumeHardness2, sample.volumeCalcium2)
-    )
+    val magnesiumResult: Float =
+        when(calciumResult) {
+            0f -> 0f
+            else -> { getAverageResult(getMagnesiumResultSingle(sample.volumeHardness1, sample.volumeCalcium1), getMagnesiumResultSingle(sample.volumeHardness2, sample.volumeCalcium2)) }
+        }
+
 
     //погрешности
     val hardnessDelta = hardnessResult * 0.09f
@@ -102,7 +104,6 @@ data class Result(val sample: Sample) {
                 0f
             }
         }
-        Log.d("standart", standardCalcium.toString())
         val standardMagnesium = (magnesiumResult * 0.02f).roundDeltaToHundredths()
         return "Норматив: \n" +
                 "Жесткость: $standardHardness \n" +
@@ -141,6 +142,12 @@ fun Float.parseResultWithDeltaToString(delta: Float): String {
 
 //условие сходимости
 fun Result.isCondition(): Boolean {
-    return this.discrepancyHardness <= standardHardness && discrepancyCalcium <= standardCalcium && discrepancyMagnesium <= standardMagnesium
+    return when (calciumResult) {
+        0f -> this.discrepancyHardness <= standardHardness
+        else -> {
+            this.discrepancyHardness <= standardHardness && discrepancyCalcium <= standardCalcium && discrepancyMagnesium <= standardMagnesium
+        }
+    }
+
 }
 

@@ -74,4 +74,6 @@ dependencies {
     implementation "androidx.room:room-ktx:2.5.2"
 
     implementation "androidx.compose.material3:material3:1.2.0-alpha03"
+
+    implementation("androidx.compose.animation:animation:1.4.3")
 }

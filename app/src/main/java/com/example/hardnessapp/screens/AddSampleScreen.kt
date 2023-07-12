@@ -1,8 +1,6 @@
 package com.example.hardnessapp.screens
 
-import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,15 +27,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.hardnessapp.data.Sample
 import com.example.hardnessapp.navigation.AllScreens
 import com.example.hardnessapp.screens.tools.extentions.Result
-import com.example.hardnessapp.screens.tools.extentions.getCalciumResult
-import com.example.hardnessapp.screens.tools.extentions.getHardnessResult
-import com.example.hardnessapp.screens.tools.extentions.getMagnesiumResult
 import com.example.hardnessapp.screens.tools.extentions.isCondition
 import com.example.hardnessapp.screens.tools.extentions.parseResultWithDeltaToString
-import kotlin.math.abs
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,6 +65,8 @@ fun AddSampleScreen(viewModel: SampleViewModel, navigator: NavHostController) {
         0f -> 0f.toString()
         else -> result.magnesiumResult.parseResultWithDeltaToString(result.magnesiumDelta)
     }
+
+
     condition = result.isCondition()
 
     var isError by remember { mutableStateOf(false) }
@@ -102,7 +97,9 @@ fun AddSampleScreen(viewModel: SampleViewModel, navigator: NavHostController) {
             ),
             label = { Text(text = "Объем пробы взятый для анализа") },
             modifier = Modifier.align(Alignment.CenterHorizontally),
-            value = sampleVolume, onValueChange = { viewModel.editSampleVolume(it) }
+            value = sampleVolume, onValueChange = {
+                viewModel.editSampleVolume(it)
+            }
         )
         OutlinedTextField(
             keyboardOptions = KeyboardOptions(
@@ -130,7 +127,20 @@ fun AddSampleScreen(viewModel: SampleViewModel, navigator: NavHostController) {
                     ),
                     label = { Text(text = "V1") },
                     value = volumeH1,
-                    onValueChange = { viewModel.editVolumeHardness1(it) })
+                    onValueChange = {
+                        viewModel.editVolumeHardness1(it.replace(',', '.'))
+                        try {
+                            if(it.toFloat() < 10f) {
+                                viewModel.editSampleVolume("100")
+                            } else {
+                                viewModel.editSampleVolume("50")
+                            }
+                        } catch (e: Exception) {
+                            Toast.makeText(context, "Вdедите корректый параметр", Toast.LENGTH_SHORT).show()
+                        }
+
+                    }
+                )
                 OutlinedTextField(
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Decimal,
@@ -138,7 +148,7 @@ fun AddSampleScreen(viewModel: SampleViewModel, navigator: NavHostController) {
                     ),
                     label = { Text(text = "V2") },
                     value = volumeH2,
-                    onValueChange = { viewModel.editVolumeHardness2(it) })
+                    onValueChange = { viewModel.editVolumeHardness2(it.replace(',', '.')) })
             }
             Column(
                 modifier = Modifier
@@ -156,7 +166,7 @@ fun AddSampleScreen(viewModel: SampleViewModel, navigator: NavHostController) {
                     ),
                     label = { Text(text = "V1") },
                     value = volumeC1,
-                    onValueChange = { viewModel.editVolumeCalcium1(it) })
+                    onValueChange = { viewModel.editVolumeCalcium1(it.replace(',', '.')) })
                 OutlinedTextField(
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Decimal,
@@ -164,7 +174,7 @@ fun AddSampleScreen(viewModel: SampleViewModel, navigator: NavHostController) {
                     ),
                     label = { Text(text = "V2") },
                     value = volumeC2,
-                    onValueChange = { viewModel.editVolumeCalcium2(it) })
+                    onValueChange = { viewModel.editVolumeCalcium2(it.replace(',', '.')) })
             }
         }
 
