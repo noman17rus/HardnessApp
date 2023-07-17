@@ -3,15 +3,18 @@ package com.example.hardnessapp.screens
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.hardnessapp.data.SampleRepository
 import com.example.hardnessapp.data.Sample
 import com.example.hardnessapp.screens.tools.extentions.editInputData
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SampleViewModel(private val database: SampleRepository) : ViewModel() {
+@HiltViewModel
+class SampleViewModel @Inject constructor (private val repositoryImpl: SampleRepository)  : ViewModel() {
+
     private val _number = MutableLiveData("")
     val number: LiveData<String> = _number
 
@@ -101,27 +104,20 @@ class SampleViewModel(private val database: SampleRepository) : ViewModel() {
 
     fun readAllSamples() {
         viewModelScope.launch(Dispatchers.Main) {
-            _listOfSamples.value = database.readAll()
+            _listOfSamples.value = repositoryImpl.readAll()
         }
     }
 
     fun addSample(sample: Sample) {
         viewModelScope.launch(Dispatchers.IO) {
-            database.add(sample) { readAllSamples() }
+            repositoryImpl.add(sample) { readAllSamples() }
         }
     }
 
     fun deleteSample(sample: Sample) {
         viewModelScope.launch(Dispatchers.IO) {
-            database.delete(sample) { readAllSamples() }
+            repositoryImpl.delete(sample) { readAllSamples() }
         }
     }
 
-}
-
-class SampleViewModelFactory(private val _database: SampleRepository) :
-    ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return SampleViewModel(database = _database) as T
-    }
 }

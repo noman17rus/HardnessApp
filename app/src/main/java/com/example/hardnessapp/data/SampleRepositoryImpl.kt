@@ -5,7 +5,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
-class SampleSampleRepositoryImpl(private val dao: SampleDao): SampleRepository {
+class SampleRepositoryImpl(private val dao: SampleDao): SampleRepository {
     override suspend fun readAll(): List<Sample> {
         return coroutineScope {
             async(Dispatchers.IO) {

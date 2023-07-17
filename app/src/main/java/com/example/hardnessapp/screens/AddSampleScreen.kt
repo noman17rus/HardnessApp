@@ -130,13 +130,17 @@ fun AddSampleScreen(viewModel: SampleViewModel, navigator: NavHostController) {
                     onValueChange = {
                         viewModel.editVolumeHardness1(it.replace(',', '.'))
                         try {
-                            if(it.toFloat() < 10f) {
+                            if (it.toFloat() < 10f) {
                                 viewModel.editSampleVolume("100")
                             } else {
                                 viewModel.editSampleVolume("50")
                             }
                         } catch (e: Exception) {
-                            Toast.makeText(context, "Вdедите корректый параметр", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                "Вdедите корректый параметр",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
 
                     }
@@ -201,12 +205,7 @@ fun AddSampleScreen(viewModel: SampleViewModel, navigator: NavHostController) {
                     } else {
                         viewModel.addSample(sample = sample)
                         navigator.navigate(route = AllScreens.MainScreen.route)
-                        viewModel.editNumber("")
-                        viewModel.editNumber("")
-                        viewModel.editVolumeHardness1("")
-                        viewModel.editVolumeHardness2("")
-                        viewModel.editVolumeCalcium1("")
-                        viewModel.editVolumeCalcium2("")
+                        clearFields(viewModel)
                     }
                 },
                 modifier = Modifier
@@ -223,4 +222,12 @@ fun AddSampleScreen(viewModel: SampleViewModel, navigator: NavHostController) {
             }
         }
     }
+}
+
+private fun clearFields(viewModel: SampleViewModel) {
+    viewModel.editNumber("")
+    viewModel.editVolumeHardness1("")
+    viewModel.editVolumeHardness2("")
+    viewModel.editVolumeCalcium1("")
+    viewModel.editVolumeCalcium2("")
 }
